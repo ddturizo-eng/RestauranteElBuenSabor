@@ -1,77 +1,51 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package com.mycompany.restauranteelbuensabor;
 
-/**
- *
- * @author alfre
- */
+import com.mycompany.restauranteelbuensabor.constantes.ConfigRestaurante;
+
 public class Utilidades {
 
-    public static double calcular(
-            double pr,
-            double cn,
-            double dc,
-            double iv,
-            double pp,
-            int ni,
-            boolean ap) {
-
-        double res = 0;
-        double tmp = 0;
-        double aux2 = 0;
-
-        res = pr * cn;
+    public static double calcular(double pr, double cn, double dc, double iv, double pp, int ni, boolean ap) {
+        double res = pr * cn;
 
         if (dc > 0) {
             res = res - (res * dc);
         }
 
-        tmp = res * iv;
-        res = res + tmp;
+        double iva = res * iv;
+        res = res + iva;
 
         if (ap) {
             res = res + (res * pp);
         }
 
-        System.out.println("RESTAURANTE EL BUEN SABOR - calculo aplicado");
+        System.out.println(ConfigRestaurante.NOMBRE + " - calculo aplicado");
 
-        aux2 = res;
-        return aux2;
+        return res;
     }
 
-    public static boolean validar() {
-        int cont = 0;
-        int i = 0;
+    public static boolean hayProductosEnPedido() {
+        int cantidadItems = 0;
 
-        while (i < Datos.cant.length) {
-            if (Datos.cant[i] > 0) {
-                cont = cont + 1;
+        for (int i = 0; i < Datos.cantidades.length; i++) {
+            if (Datos.cantidades[i] > 0) {
+                cantidadItems++;
             }
-            i++;
         }
 
-        if (cont == 0) {
-            Datos.tot = 0;
-            Datos.tmp = "";
+        if (cantidadItems == 0) {
+            Datos.total = 0;
         }
 
-        return cont > 0;
+        return cantidadItems > 0;
     }
 
     public static void reiniciar() {
-        int i = 0;
-        while (i < Datos.cant.length) {
-            Datos.cant[i] = 0;
-            i++;
+        for (int i = 0; i < Datos.cantidades.length; i++) {
+            Datos.cantidades[i] = 0;
         }
 
-        Datos.tot = 0;
-        Datos.est = 0;
-        Datos.ms = 0;
-        Datos.tmp = "";
+        Datos.total = 0;
+        Datos.estadoMesa = 0;
+        Datos.numeroMesa = 0;
     }
-
 }
