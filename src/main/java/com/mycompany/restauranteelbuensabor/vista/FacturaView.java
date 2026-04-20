@@ -2,45 +2,64 @@ package com.mycompany.restauranteelbuensabor.vista;
 
 import com.mycompany.restauranteelbuensabor.Datos;
 import com.mycompany.restauranteelbuensabor.constantes.ConfigRestaurante;
+import com.mycompany.restauranteelbuensabor.modelo.Carta;
+import com.mycompany.restauranteelbuensabor.modelo.ItemPedido;
 import com.mycompany.restauranteelbuensabor.servicio.CalculadoraFactura;
 
+/**
+ * Maneja toda la interacción con el usuario por consola.
+ * Encargada de mostrar la carta, pedidos y facturas formateadas.
+ * Esta clase no debe contener lógica de negocio, solo presentación.
+ */
 public class FacturaView {
 
     private static final String SEPARADOR = "========================================";
     private static final String SEPARADOR_FINO = "----------------------------------------";
 
+    /**
+     * Muestra el menú completo del restaurante con precios.
+     */
     public void mostrarCarta() {
         System.out.println(SEPARADOR);
         System.out.println("    " + ConfigRestaurante.NOMBRE);
         System.out.println("    --- NUESTRA CARTA ---");
         System.out.println(SEPARADOR);
 
-        for (int i = 0; i < Datos.nombres.length; i++) {
-            System.out.printf("%d. %-22s $%,.0f%n", (i + 1), Datos.nombres[i], Datos.precios[i]);
+        for (int i = 0; i < Carta.getCantidadProductos(); i++) {
+            System.out.printf("%d. %-22s $%,.0f%n", (i + 1), 
+                Carta.getProducto(i).getNombre(), 
+                Carta.getProducto(i).getPrecio());
         }
 
         System.out.println(SEPARADOR);
     }
 
+    /**
+     * Muestra el pedido actual con el detalle de productos y subtotal.
+     */
     public void mostrarPedido() {
         double subtotal = 0;
 
         System.out.println("--- PEDIDO ACTUAL ---");
 
-        for (int i = 0; i < Datos.nombres.length; i++) {
-            if (Datos.cantidades[i] > 0) {
-                System.out.printf("%-20s x%-6d $%,.0f%n",
-                        Datos.nombres[i],
-                        Datos.cantidades[i],
-                        (Datos.precios[i] * Datos.cantidades[i]));
-                subtotal += Datos.precios[i] * Datos.cantidades[i];
-            }
+        for (ItemPedido item : Datos.pedidoActual.getItems()) {
+            double itemSubtotal = item.calcularSubtotal();
+            System.out.printf("%-20s x%-6d $%,.0f%n",
+                    item.getProducto().getNombre(),
+                    item.getCantidad(),
+                    itemSubtotal);
+            subtotal += itemSubtotal;
         }
 
         System.out.println("--------------------");
         System.out.printf("%-27s $%,.0f%n", "Subtotal:", subtotal);
     }
 
+    /**
+     * Imprime la factura completa con todos los detalles:
+     * items, subtotal, descuento (si aplica), IVA, propina (si aplica) y total.
+     * Incrementa el número de factura después de imprimir.
+     */
     public void imprimirFacturaCompleta() {
         CalculadoraFactura calc = new CalculadoraFactura();
         double[] resultados = calc.calcularFactura();
@@ -79,9 +98,12 @@ public class FacturaView {
         System.out.println(SEPARADOR);
 
         Datos.numeroFactura++;
-        Datos.estadoMesa = 0;
     }
 
+    /**
+     * Imprime un resumen de factura sin el detalle de items.
+     * Útil para comprobantes rápidos.
+     */
     public void imprimirFacturaResumen() {
         CalculadoraFactura calc = new CalculadoraFactura();
         double[] resultados = calc.calcularFactura();
@@ -113,13 +135,11 @@ public class FacturaView {
     }
 
     private void imprimirItemsFactura() {
-        for (int i = 0; i < Datos.nombres.length; i++) {
-            if (Datos.cantidades[i] > 0) {
-                System.out.printf("%-20s x%-6d $%,.0f%n",
-                        Datos.nombres[i],
-                        Datos.cantidades[i],
-                        (Datos.precios[i] * Datos.cantidades[i]));
-            }
+        for (ItemPedido item : Datos.pedidoActual.getItems()) {
+            System.out.printf("%-20s x%-6d $%,.0f%n",
+                    item.getProducto().getNombre(),
+                    item.getCantidad(),
+                    item.calcularSubtotal());
         }
     }
 

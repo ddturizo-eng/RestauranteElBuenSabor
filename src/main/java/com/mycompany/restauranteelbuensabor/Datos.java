@@ -1,26 +1,16 @@
 package com.mycompany.restauranteelbuensabor;
 
+import com.mycompany.restauranteelbuensabor.modelo.Pedido;
+
+/**
+ * Acceso centralizado al estado global del sistema.
+ * Proporciona acceso al pedido activo y al contador de facturas.
+ * Solo debe haber una instancia de esta clase durante toda la ejecución.
+ */
 public class Datos {
 
-    public static String[] nombres = {
-        "Bandeja Paisa",
-        "Sancocho de Gallina",
-        "Arepa con Huevo",
-        "Jugo Natural",
-        "Gaseosa",
-        "Cerveza Poker",
-        "Agua Panela",
-        "Arroz con Pollo"
-    };
-
-    public static double[] precios = {
-        32000, 28000, 8000, 7000, 4500, 6000, 3500, 25000
-    };
-
-    public static int[] cantidades = {0, 0, 0, 0, 0, 0, 0, 0};
-
-    public static int numeroMesa = 0;
-    public static int estadoMesa = 0;
-    public static double total = 0;
+    /** Pedido actualmente activo en el sistema */
+    public static Pedido pedidoActual = new Pedido();
+    /** Contador de facturas, se incrementa después de cada factura impresa */
     public static int numeroFactura = 1;
 }

@@ -1,9 +1,16 @@
 package com.mycompany.restauranteelbuensabor;
 
 import com.mycompany.restauranteelbuensabor.constantes.ConfigRestaurante;
+import com.mycompany.restauranteelbuensabor.modelo.Carta;
+import com.mycompany.restauranteelbuensabor.modelo.Producto;
 import com.mycompany.restauranteelbuensabor.vista.FacturaView;
 import java.util.Scanner;
 
+/**
+ * Punto de entrada del sistema de facturación del restaurante.
+ * Maneja el ciclo del menú principal y coordina las operaciones del sistema.
+ * Esta clase es el controlador central que conecta la vista con los servicios.
+ */
 public class RestauranteElBuenSabor {
 
     private static Scanner sc;
@@ -75,17 +82,18 @@ public class RestauranteElBuenSabor {
     private static void agregarProducto() {
         System.out.println();
         System.out.println("--- AGREGAR PRODUCTO ---");
-        System.out.print("Numero de producto (1-" + Datos.nombres.length + "): ");
+        System.out.print("Numero de producto (1-" + Carta.getCantidadProductos() + "): ");
 
         int numeroProducto = sc.nextInt();
         System.out.print("Cantidad: ");
         int cantidad = sc.nextInt();
 
-        if (numeroProducto > 0 && numeroProducto <= Datos.nombres.length && cantidad > 0) {
+        if (numeroProducto > 0 && numeroProducto <= Carta.getCantidadProductos() && cantidad > 0) {
             inicializarMesaSiNecesario();
-            Datos.cantidades[numeroProducto - 1] += cantidad;
+            Producto producto = Carta.getProducto(numeroProducto - 1);
+            Datos.pedidoActual.agregarItem(producto, cantidad);
             System.out.println("Producto agregado al pedido.");
-            System.out.println("  -> " + Datos.nombres[numeroProducto - 1] + " x" + cantidad);
+            System.out.println("  -> " + producto.getNombre() + " x" + cantidad);
         } else {
             validarEntradaProducto(numeroProducto, cantidad);
         }
@@ -94,20 +102,21 @@ public class RestauranteElBuenSabor {
     }
 
     private static void inicializarMesaSiNecesario() {
-        if (Datos.estadoMesa == 0) {
+        if (!Datos.pedidoActual.isActivo()) {
             System.out.print("Ingrese numero de mesa: ");
-            Datos.numeroMesa = sc.nextInt();
+            int numeroMesa = sc.nextInt();
 
-            if (Datos.numeroMesa <= 0) {
-                Datos.numeroMesa = 1;
+            if (numeroMesa <= 0) {
+                numeroMesa = 1;
             }
-            Datos.estadoMesa = 1;
+            Datos.pedidoActual.setNumeroMesa(numeroMesa);
+            Datos.pedidoActual.setActivo(true);
         }
     }
 
     private static void validarEntradaProducto(int numeroProducto, int cantidad) {
-        if (numeroProducto <= 0 || numeroProducto > Datos.nombres.length) {
-            System.out.println("El numero debe estar entre 1 y " + Datos.nombres.length + ".");
+        if (numeroProducto <= 0 || numeroProducto > Carta.getCantidadProductos()) {
+            System.out.println("El numero debe estar entre 1 y " + Carta.getCantidadProductos() + ".");
         } else if (cantidad == 0) {
             System.out.println("La cantidad no puede ser cero.");
         } else {
